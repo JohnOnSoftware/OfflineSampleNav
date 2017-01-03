@@ -1,0 +1,163 @@
+<!--/////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) Autodesk, Inc. All rights reserved
+// Written by Philippe Leefsma 2016 - ADN/Developer Technical Services
+//
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
+////////////////////////////////////////////////////////////////////////////////-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, height=device-height, minimal-ui, minimum-scale=1.0, initial-scale=1, user-scalable=no"/>
+  <link rel="stylesheet" href="viewer-lib/style.css" type="text/css"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Viewer - Offline</title>
+
+  <style>
+
+    body{
+      margin:0
+    }
+
+    .viewer {
+      position: relative
+      height: 100vh
+      width: 100vw
+    }
+
+    /*#viewer2D {
+    */
+    .draggable {
+      left: 68%;
+      top: 44%;
+      width: 30%;
+      height: 50%;
+      max-width: 400px;
+      max-height: 300px;
+      z-index: 107;
+      position: absolute;
+
+      -moz-box-shadow:    1 3px 6px -3px gray;
+        -webkit-box-shadow: 1 3px 6px -3px gray;
+        box-shadow:         1 3px 6px -3px gray;
+    }
+
+    .draggable-nav {
+      height: 15px;
+      width: 100%;
+      top: 0px;
+      left: 0px;
+      position: absolute;
+      z-index: 109;
+      background-color: rgb(34, 37, 34);
+      cursor: pointer;
+
+      -moz-box-shadow:    0 3px 5px -3px black;
+        -webkit-box-shadow: 0 3px 5px -3px black;
+        box-shadow:         0 3px 5px -3px black;
+    }
+
+    .draggable-body {
+      top: 15px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      position: absolute;
+      z-index: 108;
+      border: black 1px solid;
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+
+  <script src="viewer-lib/three.min.js"></script>
+  <script src="viewer-lib/viewer3D.js"></script>
+
+  <div id="viewer" class="viewer">
+  </div>
+  <div class="draggable">
+    <div class="draggable-nav"></div>
+    <div class="draggable-body">
+      <div id="viewer2D"></div>
+    </div>
+  </div>
+
+  <script>
+
+    /////////////////////////////////////////////////////////////////
+    // Initialization Options
+    //
+    /////////////////////////////////////////////////////////////////
+    var localfile = '';
+    var initOptions = {
+      path: Autodesk.Viewing.Private.getParameterByName('path') || './rac_basic_sample_project1rvt/37622ef7-5719-c2f8-517b-128994432401/3D_View/_3D_ 960621/_3D_.svf',
+      env: 'Local'
+    }
+
+    var initOptions2d = {
+      path: Autodesk.Viewing.Private.getParameterByName('path') || './rac_basic_sample_project1rvt/c74faa16-ae55-cea4-81a3-71ebf44acb6c_f2d/primaryGraphics.f2d',
+      env: 'Local'
+    }    
+
+    /////////////////////////////////////////////////////////////////
+    // Environment Initialized Handler
+    //
+    /////////////////////////////////////////////////////////////////
+    function onEnvInitialized () {
+
+      var domContainer = document.getElementById('viewer')
+      // UI-less Version: viewer without controls and commands
+      //viewer = new Autodesk.Viewing.Viewer3D(domContainer)
+
+      // GUI Version: viewer with controls
+      var viewer = new Autodesk.Viewing.Private.GuiViewer3D(domContainer)
+      viewer.initialize()
+      viewer.loadModel(initOptions.path)
+
+
+      var view2DContainer = document.getElementById('viewer2D')
+      var viewer2d = new Autodesk.Viewing.Private.GuiViewer3D(view2DContainer)
+      viewer2d.initialize()
+      viewer2d.loadModel(initOptions2d.path)
+      
+    }
+
+    /////////////////////////////////////////////////////////////////
+    // Error Handler
+    //
+    /////////////////////////////////////////////////////////////////
+    function onLoadError (errCode) {
+
+      console.log('Error loading document: ' + errCode)
+    }
+
+    /////////////////////////////////////////////////////////////////
+    // Bootstraping
+    //
+    /////////////////////////////////////////////////////////////////
+    Autodesk.Viewing.Initializer(
+      initOptions,
+      function() {
+        onEnvInitialized ()
+      })
+
+
+
+  </script>
+
+</body>
+</html>
