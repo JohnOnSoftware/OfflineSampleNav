@@ -14,3 +14,13 @@ Note the local address output by the server (ex: http://127.0.0.1:8080) and type
 This project does not require any internet connection or Forge API credentials and can be used for testing the viewer API locally
 
 You can also run that sample the following links, which in that case requires an internet connection:
+
+License
+
+MIT License
+
+Written by
+
+Written by Zhong Wu
+
+Forge Partner Development - http://forge.autodesk.com
