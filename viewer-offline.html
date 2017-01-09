@@ -29,7 +29,7 @@
       margin:0
     }
 
-    .viewer {
+    .viewer3D {
       position: relative
       height: 100vh
       width: 100vw
@@ -87,7 +87,7 @@
   <script src="viewer-lib/three.min.js"></script>
   <script src="viewer-lib/viewer3D.js"></script>
 
-  <div id="viewer" class="viewer">
+  <div id="viewer3D" class="viewer">
   </div>
   <div class="draggable">
     <div class="draggable-nav"></div>
@@ -102,38 +102,62 @@
     // Initialization Options
     //
     /////////////////////////////////////////////////////////////////
-    var localfile = '';
-    var initOptions = {
+    var localfile2d = './rac_basic_sample_project1rvt/c74faa16-ae55-cea4-81a3-71ebf44acb6c_f2d/primaryGraphics.f2d';
+    var initOptions3d = {
       path: Autodesk.Viewing.Private.getParameterByName('path') || './rac_basic_sample_project1rvt/37622ef7-5719-c2f8-517b-128994432401/3D_View/_3D_ 960621/_3D_.svf',
       env: 'Local'
     }
 
     var initOptions2d = {
-      path: Autodesk.Viewing.Private.getParameterByName('path') || './rac_basic_sample_project1rvt/c74faa16-ae55-cea4-81a3-71ebf44acb6c_f2d/primaryGraphics.f2d',
+      path: Autodesk.Viewing.Private.getParameterByName('path') || localfile2d,
       env: 'Local'
     }    
 
+    var _blockEventSecondary = false;
+    var _blockEventMain = false;
     /////////////////////////////////////////////////////////////////
     // Environment Initialized Handler
     //
     /////////////////////////////////////////////////////////////////
     function onEnvInitialized () {
 
-      var domContainer = document.getElementById('viewer')
-      // UI-less Version: viewer without controls and commands
-      //viewer = new Autodesk.Viewing.Viewer3D(domContainer)
-
-      // GUI Version: viewer with controls
-      var viewer = new Autodesk.Viewing.Private.GuiViewer3D(domContainer)
-      viewer.initialize()
-      viewer.loadModel(initOptions.path)
+      var viewer3DContainer = document.getElementById('viewer3D')
+      var viewer2DContainer = document.getElementById('viewer2D')
 
 
-      var view2DContainer = document.getElementById('viewer2D')
-      var viewer2d = new Autodesk.Viewing.Private.GuiViewer3D(view2DContainer)
+      var viewer3d = new Autodesk.Viewing.Private.GuiViewer3D(viewer3DContainer)
+      var viewer2d = new Autodesk.Viewing.Private.GuiViewer3D(viewer2DContainer)
+
+      viewer3d.initialize()
       viewer2d.initialize()
+
+
+
+      viewer3d.addEventListener(
+        Autodesk.Viewing.SELECTION_CHANGED_EVENT, 
+        function (event) {
+          if (_blockEventSecondary)
+            return;
+          _blockEventMain = true;
+          viewer2d.select(viewer3d.getSelection());
+          _blockEventMain = false;
+      });
+
+      // select object with same dbId in 2d viewer
+      viewer2d.addEventListener(
+        Autodesk.Viewing.SELECTION_CHANGED_EVENT, 
+        function (event) {
+          if (_blockEventMain)
+            return;
+          _blockEventSecondary = true;
+          viewer3d.select(viewer2d.getSelection());
+          _blockEventSecondary = false;
+      });
+
+
+      viewer3d.loadModel(initOptions3d.path)
       viewer2d.loadModel(initOptions2d.path)
-      
+
     }
 
     /////////////////////////////////////////////////////////////////
@@ -150,7 +174,7 @@
     //
     /////////////////////////////////////////////////////////////////
     Autodesk.Viewing.Initializer(
-      initOptions,
+      initOptions3d,
       function() {
         onEnvInitialized ()
       })
